@@ -3,8 +3,8 @@ mod complex;
 use image::{ImageBuffer, RgbImage};
 use crate::mandelbrot::complex::Complex;
 
-const WIDTH: u32 = 800;
-const HEIGHT: u32 = 600;
+pub(crate) const MAX_ITERATIONS: u32 = 100;
+
 const MIN_X: f64 = -2.0;
 const MAX_X: f64 = 1.0;
 const MIN_Y: f64 = -1.0;
@@ -12,25 +12,34 @@ const MAX_Y: f64 = 1.0;
 
 pub(crate) struct Mandelbrot {
     image: RgbImage,
+    version: u32,
 }
 
 impl Mandelbrot {
-    pub(crate) fn new() -> Self {
-        let mut ret = Self {
-            image: ImageBuffer::new(512, 512)
-        };
-        ret.compute();
-        return ret;
+    pub(crate) fn new(width: u32, height: u32) -> Self {
+        Self {
+            image: ImageBuffer::new(width, height),
+            version: 0,
+        }
     }
 
     pub(crate) fn image(&self) -> &RgbImage {
         &self.image
     }
 
+    pub(crate) fn resize(&mut self, new_width: u32, new_height: u32) {
+        self.version += 1;
+        self.image = ImageBuffer::new(new_width, new_height);
+    }
+
     pub(crate) fn compute(&mut self) {
         let (width, height) = self.image.dimensions();
+        let version = self.version;
         for y in 0..height {
             for x in 0..width {
+                if version != self.version {
+                    return;
+                }
                 let iterations = self.is_in_mandelbrot_set(x, y);
                 if iterations == 100 {
                     self.image.put_pixel(x, y, image::Rgb([0, 0, 0]));
@@ -47,7 +56,6 @@ impl Mandelbrot {
         let scaled_y = (y as f64 / self.image.height() as f64) * (MAX_Y - MIN_Y) + MIN_Y;
         let c = Complex::new(scaled_x, scaled_y);
         let mut z = Complex::new(0.0, 0.0);
-        const MAX_ITERATIONS: u32 = 100;
         for i in 0..MAX_ITERATIONS {
             z = z * z + c;
             if z.norm_sqr() > 4.0 {
