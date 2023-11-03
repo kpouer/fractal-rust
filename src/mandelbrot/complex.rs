@@ -11,13 +11,6 @@ impl Complex {
         Complex { re, im }
     }
 
-    fn square(&self) -> Complex {
-        Complex {
-            re: self.re * self.re - self.im * self.im,
-            im: 2.0 * self.re * self.im,
-        }
-    }
-
     pub(crate) fn norm_sqr(&self) -> f64 {
         self.re * self.re + self.im * self.im
     }
