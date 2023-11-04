@@ -6,8 +6,8 @@ use speedy2d::color::Color;
 use speedy2d::window::{WindowHandler, WindowHelper};
 use speedy2d::{Graphics2D, Window};
 use speedy2d::dimen::UVec2;
-use crate::color_model::black_white::BlackWhite;
-use crate::color_model::ColorModel;
+use crate::color_model::{ColorModel, get_color_model};
+use crate::color_model::ColorModelType::HSVColor;
 use crate::mandelbrot::Mandelbrot;
 
 const INITIAL_WIDTH: u32 = 1024;
@@ -18,8 +18,8 @@ fn main()
     let window = Window::new_centered("Mandelbrot", (INITIAL_WIDTH, INITIAL_HEIGHT)).unwrap();
     let mut mandelbrot = Mandelbrot::new(INITIAL_WIDTH, INITIAL_HEIGHT);
     mandelbrot.compute();
-    let color_model: BlackWhite = BlackWhite::new();
-    window.run_loop(MyWindowHandler { mandelbrot, color_model: Box::new(color_model) });
+    let color_model = get_color_model(HSVColor);
+    window.run_loop(MyWindowHandler { mandelbrot, color_model });
 }
 
 struct MyWindowHandler
