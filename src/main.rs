@@ -6,8 +6,9 @@ use speedy2d::color::Color;
 use speedy2d::window::{WindowHandler, WindowHelper};
 use speedy2d::{Graphics2D, Window};
 use speedy2d::dimen::UVec2;
-use crate::color_model::{ColorModel, get_color_model};
+use crate::color_model::{ColorArgs, get_color_model};
 use crate::color_model::ColorModelType::HSVColor;
+use crate::constants::MAX_ITERATIONS;
 use crate::mandelbrot::Mandelbrot;
 
 const INITIAL_WIDTH: u32 = 1024;
@@ -25,7 +26,7 @@ fn main()
 struct MyWindowHandler
 {
     mandelbrot: Mandelbrot,
-    color_model: Box<dyn ColorModel>,
+    color_model: Box<dyn Fn(&ColorArgs) -> Color>,
 }
 
 impl WindowHandler for MyWindowHandler
@@ -43,10 +44,13 @@ impl WindowHandler for MyWindowHandler
         graphics.clear_screen(Color::WHITE);
         let mandelbrot = &self.mandelbrot;
         let (width, height) = mandelbrot.dimensions();
+        let mut color_args = ColorArgs::new(0, MAX_ITERATIONS);
+        let color_function = &self.color_model;
         for y in 0..height {
             for x in 0..width {
                 let iterations = mandelbrot.get_pixel_iterations(x, y);
-                let color = self.color_model.iterations_to_rgb(iterations);
+                color_args.set_iterations(iterations);
+                let color = color_function(&color_args);
                 graphics.draw_line((x as f32, y as f32),
                                    ((x+1) as f32, (y+1) as f32),
                                    1.0,
