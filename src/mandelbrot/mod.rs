@@ -1,6 +1,7 @@
 mod complex;
 mod image;
 
+use speedy2d::dimen::Vec2;
 use crate::constants::MAX_ITERATIONS;
 use crate::mandelbrot::complex::Complex;
 use crate::mandelbrot::image::Image;
@@ -13,6 +14,11 @@ const MAX_Y: f64 = 1.0;
 pub(crate) struct Mandelbrot {
     image: Image,
     version: u32,
+    min_x: f64,
+    width: f64,
+    min_y: f64,
+    height: f64,
+    max_iterations: u16,
 }
 
 impl Mandelbrot {
@@ -20,7 +26,21 @@ impl Mandelbrot {
         Self {
             image: Image::new(width, height),
             version: 0,
+            min_x: MIN_X,
+            width: MAX_X - MIN_X,
+            min_y: MIN_Y,
+            height: MAX_Y - MIN_Y,
+            max_iterations: MAX_ITERATIONS,
         }
+    }
+
+    pub(crate) fn set_center(&mut self, center: Vec2) {
+        let scaled_x = self.scale_x(center.x);
+        let scaled_y = self.scale_y(center.y);
+        self.width /= 2.0;
+        self.height /= 2.0;
+        self.min_x = scaled_x - self.width / 2.0;
+        self.min_y = scaled_y - self.height / 2.0;
     }
 
     pub(crate) fn resize(&mut self, new_width: u32, new_height: u32) {
@@ -45,23 +65,62 @@ impl Mandelbrot {
                 if version != self.version {
                     return;
                 }
-                let iterations = self.is_in_mandelbrot_set(x, y);
+                let iterations = self.is_in_mandelbrot_set(x, y, self.max_iterations);
                 self.image.set_pixel_iterations(x, y, iterations);
             }
         }
     }
 
-    fn is_in_mandelbrot_set(&self, x: u16, y: u16) -> u16 {
-        let scaled_x = (x as f64 / self.image.width() as f64) * (MAX_X - MIN_X) + MIN_X;
-        let scaled_y = (y as f64 / self.image.height() as f64) * (MAX_Y - MIN_Y) + MIN_Y;
+    fn is_in_mandelbrot_set(&self, x: u16, y: u16, max_iterations: u16) -> u16 {
+        let scaled_x = self.scale_x(x);
+        let scaled_y = self.scale_y(y);
         let c = Complex::new(scaled_x, scaled_y);
         let mut z = Complex::new(0.0, 0.0);
-        for i in 0..MAX_ITERATIONS {
+        for i in 0..max_iterations {
             z = z * z + c;
             if z.norm_sqr() > 4.0 {
-                return i as u16;
+                return i;
             }
         }
-        MAX_ITERATIONS
+        max_iterations
+    }
+
+    fn scale_x<T: Into<f64>>(&self, x: T) -> f64 {
+        (x.into() / self.image.width() as f64) * self.width + self.min_x
+    }
+
+    fn scale_y<T: Into<f64>>(&self, y: T) -> f64 {
+        (y.into() / self.image.height() as f64) * self.height + self.min_y
+    }
+
+    pub(crate) fn zoom_in(&mut self) {
+        self.min_x += self.width / 4.0;
+        self.min_y += self.height / 4.0;
+        self.width /= 2.0;
+        self.height /= 2.0;
+    }
+
+    pub(crate) fn zoom_out(&mut self) {
+        self.min_x -= self.width;
+        self.min_y -= self.height;
+        self.width *= 2.0;
+        self.height *= 2.0;
+    }
+
+    pub(crate) fn max_iterations(&self) -> u16 {
+        self.max_iterations
+    }
+
+    pub(crate) fn decrease_iterations(&mut self) {
+       self.max_iterations = self.max_iterations / 2;
+        if self.max_iterations < 10 {
+            self.max_iterations = 10;
+        }
+        println!("max_iterations: {}", self.max_iterations)
+    }
+
+    pub(crate) fn increase_iterations(&mut self) {
+        self.max_iterations *= 2;
+        println!("max_iterations: {}", self.max_iterations)
     }
 }

@@ -1,1 +1,1 @@
-pub(crate) const MAX_ITERATIONS: u16 = 100;
+pub(crate) const MAX_ITERATIONS: u16 = 10;
