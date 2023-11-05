@@ -13,6 +13,10 @@ impl Image {
         }
     }
 
+    pub(crate) fn iterations(&self) -> &[u16] {
+        &self.iterations
+    }
+
     pub(crate) fn width(&self) -> u16 {
         self.width
     }

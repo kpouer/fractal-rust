@@ -56,6 +56,10 @@ impl Mandelbrot {
         self.image.get_pixel_iterations(x, y)
     }
 
+    pub(crate) fn iterations(&self) -> &[u16] {
+        &self.image.iterations()
+    }
+
     pub(crate) fn compute(&mut self) {
         println!("compute");
         let (width, height) = self.image.dimensions();
