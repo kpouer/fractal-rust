@@ -53,7 +53,7 @@ pub(crate) enum ColorModelType {
 }
 
 pub(crate) fn get_color_model(color_model_type: ColorModelType) -> Box<dyn Fn(&ColorArgs) -> Color> {
-    return match color_model_type {
+    match color_model_type {
         ColorModelType::BlackWhite => { Box::new(black_and_white) }
         ColorModelType::HSVColor => { Box::new(hsv) }
     }

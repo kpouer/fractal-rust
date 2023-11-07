@@ -126,7 +126,7 @@ impl Mandelbrot {
     }
 
     pub(crate) fn decrease_iterations(&mut self) {
-       self.max_iterations = self.max_iterations / 2;
+       self.max_iterations /= 2;
         if self.max_iterations < 10 {
             self.max_iterations = 10;
         }
