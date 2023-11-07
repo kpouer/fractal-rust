@@ -14,6 +14,10 @@ Press 'c' to zoom out
 Press 'v' to zoom in 
 ```
 
+## Examples
+
+![Mandelbrot](examples/mandelbrot.png)
+
 ## Licence
 
 The project is released under MIT licence
