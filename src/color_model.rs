@@ -32,7 +32,7 @@ impl ColorArgs {
 }
 
 fn black_and_white(color_args: &ColorArgs) -> Color {
-    let gray_scale: f64 = 255.0 - color_args.iterations_as_f64() * 255.0 / color_args.max_iterations_as_f64();
+    let gray_scale: f64 = color_args.iterations_as_f64() / color_args.max_iterations_as_f64();
     Color::from_gray(gray_scale as f32)
 }
 

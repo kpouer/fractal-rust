@@ -1,10 +1,13 @@
 mod complex;
 mod image;
+mod pixel;
 
 use speedy2d::dimen::Vec2;
 use crate::constants::MAX_ITERATIONS;
 use crate::mandelbrot::complex::Complex;
 use crate::mandelbrot::image::Image;
+use rayon::prelude::*;
+use crate::mandelbrot::pixel::Pixel;
 
 const MIN_X: f64 = -2.0;
 const MAX_X: f64 = 1.0;
@@ -63,14 +66,21 @@ impl Mandelbrot {
     pub(crate) fn compute(&mut self) {
         println!("compute");
         let (width, height) = self.image.dimensions();
-        let version = self.version;
-        for y in 0..height {
-            for x in 0..width {
-                if version != self.version {
-                    return;
+        let height_ranges: Vec<u16> = (0..height).collect();
+        let pixels:Vec<Vec<Pixel>> = height_ranges
+            .par_iter()
+            .map(|y| {
+                let mut pixel_vec = Vec::new();
+                for x in 0..width {
+                    let iterations = self.is_in_mandelbrot_set(x, *y, self.max_iterations);
+                    pixel_vec.push(Pixel::new(x, *y, iterations));
                 }
-                let iterations = self.is_in_mandelbrot_set(x, y, self.max_iterations);
-                self.image.set_pixel_iterations(x, y, iterations);
+                pixel_vec
+            }).collect();
+        for pixel_vec in pixels {
+            let pixel_vec: Vec<Pixel> = pixel_vec;
+            for pixel in pixel_vec {
+                self.image.set_pixel_iterations(&pixel);
             }
         }
     }

@@ -1,3 +1,5 @@
+use crate::mandelbrot::pixel::Pixel;
+
 pub(crate) struct Image {
     width: u16,
     height: u16,
@@ -25,12 +27,12 @@ impl Image {
         self.height
     }
 
-    pub(crate) fn set_pixel_iterations(&mut self, x: u16, y: u16, iterations: u16) {
-        let index = self.get_index(x, y);
+    pub(crate) fn set_pixel_iterations(&mut self, pixel: &Pixel) {
+        let index = self.get_index(pixel.x(), pixel.y());
         if index >= self.iterations.len() {
             panic!("index out of bounds");
         }
-        self.iterations[index] = iterations;
+        self.iterations[index] = pixel.iterations();
     }
 
     pub(crate) fn get_pixel_iterations(&self, x: u16, y: u16) -> u16 {
