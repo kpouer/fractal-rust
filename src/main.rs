@@ -112,7 +112,7 @@ impl MyWindowHandler {
         for y in 0..height {
             for x in 0..width {
                 let iterations = mandelbrot.get_pixel_iterations(x, y);
-                color_args.set_iterations(iterations);
+                color_args.iterations = iterations;
                 let color = color_function(&color_args);
                 graphics.draw_line((x as f32, y as f32),
                                    ((x + 1) as f32, (y + 1) as f32),
@@ -125,7 +125,7 @@ impl MyWindowHandler {
     }
 
     fn build_image(&mut self, graphics: &mut Graphics2D) -> ImageHandle {
-        let data = self.mandelbrot.iterations();
+        let data = &self.mandelbrot.image.iterations;
         let color_function = &self.color_model;
         let mut buffer: Vec<u8> = Vec::new();
         data.iter()

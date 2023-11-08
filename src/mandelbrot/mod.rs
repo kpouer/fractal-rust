@@ -15,7 +15,7 @@ const MIN_Y: f64 = -1.0;
 const MAX_Y: f64 = 1.0;
 
 pub(crate) struct Mandelbrot {
-    image: Image,
+    pub(crate) image: Image,
     version: u32,
     min_x: f64,
     width: f64,
@@ -57,10 +57,6 @@ impl Mandelbrot {
 
     pub(crate) fn get_pixel_iterations(&self, x: u16, y: u16) -> u16 {
         self.image.get_pixel_iterations(x, y)
-    }
-
-    pub(crate) fn iterations(&self) -> &[u16] {
-        &self.image.iterations()
     }
 
     pub(crate) fn compute(&mut self) {

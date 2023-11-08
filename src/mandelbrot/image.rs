@@ -3,7 +3,7 @@ use crate::mandelbrot::pixel::Pixel;
 pub(crate) struct Image {
     width: u16,
     height: u16,
-    iterations: Vec<u16>,
+    pub(crate) iterations: Vec<u16>,
 }
 
 impl Image {
@@ -13,10 +13,6 @@ impl Image {
             height: height as u16,
             iterations: vec![0; (width * height) as usize],
         }
-    }
-
-    pub(crate) fn iterations(&self) -> &[u16] {
-        &self.iterations
     }
 
     pub(crate) fn width(&self) -> u16 {
