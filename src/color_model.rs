@@ -19,7 +19,7 @@ impl ColorArgs {
     }
 
     fn get_hue(&self) -> f64 {
-        self.iterations as f64 * 360.0 / self.max_iterations as f64
+        self.iterations as f64 / self.max_iterations as f64
     }
 }
 
@@ -32,7 +32,7 @@ fn hsv(color_args: &ColorArgs) -> Color {
     if !color_args.escaped() {
         return Color::BLACK;
     }
-    let hue: f64 = color_args.get_hue();
+    let hue: f64 = color_args.get_hue() * 360.0;
     let saturation: f64 = 1.0;
     let lightness: f64 = 0.5;
     let color = hsv_to_rgb(hue, saturation, lightness);
@@ -58,19 +58,19 @@ mod tests {
 
     #[test]
     fn test_black() {
-        let color_arg = ColorArgs::new(150, 150);
-        assert_eq!(black_and_white(&color_arg), Color::from_gray(0.0));
+        let color_arg = ColorArgs::new(0, 150);
+        assert_eq!(black_and_white(&color_arg), Color::BLACK);
     }
 
     #[test]
     fn test_white() {
-        let color_arg = ColorArgs::new(0, 150);
-        assert_eq!(black_and_white(&color_arg), Color::from_gray(255.0));
+        let color_arg = ColorArgs::new(150, 150);
+        assert_eq!(black_and_white(&color_arg), Color::WHITE);
     }
 
     #[test]
     fn test_gray() {
         let color_arg = ColorArgs::new(50, 100);
-        assert_eq!(black_and_white(&color_arg), Color::from_gray(127.5));
+        assert_eq!(black_and_white(&color_arg), Color::from_gray(0.5));
     }
 }
