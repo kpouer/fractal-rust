@@ -3,7 +3,7 @@ use speedy2d::color::Color;
 
 pub(crate) struct ColorArgs {
     pub(crate) iterations: u16,
-    pub(crate) max_iterations: u16,
+    max_iterations: u16,
 }
 
 impl ColorArgs {
@@ -14,25 +14,17 @@ impl ColorArgs {
         }
     }
 
-    pub(crate) fn set_iterations(&mut self, iterations: u16) {
-        self.iterations = iterations;
-    }
-
-    fn iterations_as_f64(&self) -> f64 {
-        self.iterations as f64
-    }
-
-    fn max_iterations_as_f64(&self) -> f64 {
-        self.max_iterations as f64
-    }
-
     fn escaped(&self) -> bool {
         self.iterations < self.max_iterations
+    }
+
+    fn get_hue(&self) -> f64 {
+        self.iterations as f64 * 360.0 / self.max_iterations as f64
     }
 }
 
 fn black_and_white(color_args: &ColorArgs) -> Color {
-    let gray_scale: f64 = color_args.iterations_as_f64() / color_args.max_iterations_as_f64();
+    let gray_scale: f64 = color_args.get_hue();
     Color::from_gray(gray_scale as f32)
 }
 
@@ -40,7 +32,7 @@ fn hsv(color_args: &ColorArgs) -> Color {
     if !color_args.escaped() {
         return Color::BLACK;
     }
-    let hue: f64 = color_args.iterations_as_f64() * 360.0 / color_args.max_iterations_as_f64();
+    let hue: f64 = color_args.get_hue();
     let saturation: f64 = 1.0;
     let lightness: f64 = 0.5;
     let color = hsv_to_rgb(hue, saturation, lightness);
