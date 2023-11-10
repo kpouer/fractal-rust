@@ -8,9 +8,9 @@ use speedy2d::window::{KeyScancode, MouseButton, VirtualKeyCode, WindowHandler, 
 
 use crate::color_model::{ColorArgs, get_color_model};
 use crate::constants::DEFAULT_COLOR_MODEL;
-use crate::mandelbrot::Mandelbrot;
+use crate::fractal::mandelbrot::Mandelbrot;
 
-mod mandelbrot;
+mod fractal;
 mod color_model;
 mod constants;
 

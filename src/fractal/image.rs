@@ -1,4 +1,4 @@
-use crate::mandelbrot::pixel::Pixel;
+use crate::fractal::pixel::Pixel;
 
 pub(crate) struct Image {
     width: u16,

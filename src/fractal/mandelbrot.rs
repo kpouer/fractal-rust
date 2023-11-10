@@ -1,13 +1,9 @@
-mod complex;
-mod image;
-mod pixel;
-
 use speedy2d::dimen::Vec2;
 use crate::constants::MAX_ITERATIONS;
-use crate::mandelbrot::complex::Complex;
-use crate::mandelbrot::image::Image;
+use crate::fractal::complex::Complex;
+use crate::fractal::image::Image;
 use rayon::prelude::*;
-use crate::mandelbrot::pixel::Pixel;
+use crate::fractal::pixel::Pixel;
 
 const MIN_X: f64 = -2.0;
 const MAX_X: f64 = 1.0;
@@ -122,7 +118,7 @@ impl Mandelbrot {
     }
 
     pub(crate) fn decrease_iterations(&mut self) {
-       self.max_iterations /= 2;
+        self.max_iterations /= 2;
         if self.max_iterations < 10 {
             self.max_iterations = 10;
         }
