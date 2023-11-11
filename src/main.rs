@@ -1,5 +1,7 @@
 use speedy2d::Window;
+use crate::buddahbrot_window_handler::BuddahbrotWindowHandler;
 use crate::fractal::fractal_type::FractalType;
+use crate::mandelbrot_window_handler::MandelbrotWindowHandler;
 
 mod fractal;
 mod color_model;
@@ -13,11 +15,9 @@ const INITIAL_HEIGHT: u32 = 768;
 fn main()
 {
     let window = Window::new_centered("Fractal-rust", (INITIAL_WIDTH, INITIAL_HEIGHT)).unwrap();
-    let fractal_type = FractalType::Mandelbrot;
-    let window_handler = match fractal_type {
-        FractalType::Mandelbrot => mandelbrot_window_handler::MandelbrotWindowHandler::new(),
-        FractalType::Buddahbrot => unimplemented!(),
+    let fractal_type = FractalType::Buddahbrot;
+    match fractal_type {
+        FractalType::Mandelbrot => { window.run_loop(MandelbrotWindowHandler::new()); }
+        FractalType::Buddahbrot => { window.run_loop(BuddahbrotWindowHandler::new()); }
     };
-
-    window.run_loop(window_handler);
 }

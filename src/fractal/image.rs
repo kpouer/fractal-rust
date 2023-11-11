@@ -4,6 +4,7 @@ pub(crate) struct Image {
     width: u16,
     height: u16,
     pub(crate) iterations: Vec<u16>,
+
 }
 
 impl Image {
@@ -29,6 +30,20 @@ impl Image {
             panic!("index out of bounds");
         }
         self.iterations[index] = pixel.iterations();
+    }
+
+    pub(crate) fn increment_pixel(&mut self, pixel: &Pixel) {
+        let index = self.get_index(pixel.x(), pixel.y());
+        if index >= self.iterations.len() {
+            // println!("FAIL x: {}, y: {}, index: {}, len: {}", pixel.x(), pixel.y(), index, self.iterations.len());
+            return;
+        }
+        let v = self.iterations[index];
+        let v = v + 1;
+        if v > 60000 {
+            return;
+        }
+        self.iterations[index] = v;
     }
 
     pub(crate) fn get_pixel_iterations(&self, x: u16, y: u16) -> u16 {

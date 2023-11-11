@@ -1,9 +1,9 @@
 use std::ops;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub(crate) struct Complex {
-    re: f64,
-    im: f64,
+    pub(crate) re: f64,
+    pub(crate) im: f64,
 }
 
 impl Complex {

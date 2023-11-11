@@ -4,6 +4,7 @@ use crate::fractal::complex::Complex;
 use crate::fractal::image::Image;
 use rayon::prelude::*;
 use crate::fractal::pixel::Pixel;
+use crate::fractal::{scale_x, scale_y};
 
 const MIN_X: f64 = -2.0;
 const MAX_X: f64 = 1.0;
@@ -33,9 +34,9 @@ impl Mandelbrot {
         }
     }
 
-    pub(crate) fn set_center(&mut self, center: Vec2) {
-        let scaled_x = self.scale_x(center.x);
-        let scaled_y = self.scale_y(center.y);
+    pub(crate) fn set_center(&mut self, center_pixel: Vec2) {
+        let scaled_x = scale_x(center_pixel.x, self.image.width() as f64, self.min_x, self.width);
+        let scaled_y = scale_y(center_pixel.y, self.image.height() as f64, self.min_y, self.height);
         self.width /= 2.0;
         self.height /= 2.0;
         self.min_x = scaled_x - self.width / 2.0;
@@ -78,8 +79,8 @@ impl Mandelbrot {
     }
 
     fn is_in_mandelbrot_set(&self, x: u16, y: u16, max_iterations: u16) -> u16 {
-        let scaled_x = self.scale_x(x);
-        let scaled_y = self.scale_y(y);
+        let scaled_x = scale_x(x, self.image.width() as f64, self.min_x, self.width);
+        let scaled_y = scale_y(y, self.image.height() as f64, self.min_y, self.height);
         let c = Complex::new(scaled_x, scaled_y);
         let mut z = Complex::new(0.0, 0.0);
         for i in 0..max_iterations {
@@ -89,14 +90,6 @@ impl Mandelbrot {
             }
         }
         max_iterations
-    }
-
-    fn scale_x<T: Into<f64>>(&self, x: T) -> f64 {
-        (x.into() / self.image.width() as f64) * self.width + self.min_x
-    }
-
-    fn scale_y<T: Into<f64>>(&self, y: T) -> f64 {
-        (y.into() / self.image.height() as f64) * self.height + self.min_y
     }
 
     pub(crate) fn zoom_in(&mut self) {
