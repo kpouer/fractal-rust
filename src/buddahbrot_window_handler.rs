@@ -85,16 +85,6 @@ impl WindowHandler for BuddahbrotWindowHandler
                 self.must_redraw = true;
                 helper.request_redraw();
             }
-            Some(VirtualKeyCode::V) => {
-                self.fractal.zoom_in();
-                self.must_redraw = true;
-                helper.request_redraw();
-            }
-            Some(VirtualKeyCode::C) => {
-                self.fractal.zoom_out();
-                self.must_redraw = true;
-                helper.request_redraw();
-            }
             _ => {}
         }
     }
@@ -127,6 +117,7 @@ impl BuddahbrotWindowHandler {
         let data = &self.fractal.image.iterations;
         let color_function = &self.color_model;
         let mut buffer: Vec<u8> = Vec::new();
+        let max_iterations = self.fractal.image.iterations.iter().max().unwrap();
         data.iter()
             .map(|iterations| {
                 let color_args = ColorArgs::new(*iterations, self.fractal.max_iterations());

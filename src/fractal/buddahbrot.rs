@@ -98,20 +98,6 @@ impl Buddahbrot {
         Some(points)
     }
 
-    pub(crate) fn zoom_in(&mut self) {
-        self.min_x += self.width / 4.0;
-        self.min_y += self.height / 4.0;
-        self.width /= 2.0;
-        self.height /= 2.0;
-    }
-
-    pub(crate) fn zoom_out(&mut self) {
-        self.min_x -= self.width;
-        self.min_y -= self.height;
-        self.width *= 2.0;
-        self.height *= 2.0;
-    }
-
     pub(crate) fn max_iterations(&self) -> u16 {
         self.max_iterations
     }
