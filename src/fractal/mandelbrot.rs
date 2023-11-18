@@ -1,125 +1,63 @@
-use speedy2d::dimen::Vec2;
+use rayon::prelude::*;
+
 use crate::constants::MAX_ITERATIONS;
+use crate::fractal::{scale_x, scale_y};
 use crate::fractal::complex::Complex;
 use crate::fractal::image::Image;
-use rayon::prelude::*;
+use crate::fractal::params::Params;
 use crate::fractal::pixel::Pixel;
-use crate::fractal::{scale_x, scale_y};
 
 const MIN_X: f64 = -2.0;
 const MAX_X: f64 = 1.0;
 const MIN_Y: f64 = -1.0;
 const MAX_Y: f64 = 1.0;
 
-pub(crate) struct Mandelbrot {
-    pub(crate) image: Image,
-    version: u32,
-    min_x: f64,
-    width: f64,
-    min_y: f64,
-    height: f64,
-    max_iterations: u16,
+pub(crate) fn get_mandelbrot_params() -> Params {
+    Params {
+        max_iterations: MAX_ITERATIONS,
+        support_zoom: true,
+        min_x: MIN_X,
+        width: MAX_X - MIN_X,
+        min_y: MIN_Y,
+        height: MAX_Y - MIN_Y,
+    }
 }
 
-impl Mandelbrot {
-    pub(crate) fn new(width: u32, height: u32) -> Self {
-        Self {
-            image: Image::new(width, height),
-            version: 0,
-            min_x: MIN_X,
-            width: MAX_X - MIN_X,
-            min_y: MIN_Y,
-            height: MAX_Y - MIN_Y,
-            max_iterations: MAX_ITERATIONS,
-        }
-    }
-
-    pub(crate) fn set_center(&mut self, center_pixel: Vec2) {
-        let scaled_x = scale_x(center_pixel.x, self.image.width() as f64, self.min_x, self.width);
-        let scaled_y = scale_y(center_pixel.y, self.image.height() as f64, self.min_y, self.height);
-        self.width /= 2.0;
-        self.height /= 2.0;
-        self.min_x = scaled_x - self.width / 2.0;
-        self.min_y = scaled_y - self.height / 2.0;
-    }
-
-    pub(crate) fn resize(&mut self, new_width: u32, new_height: u32) {
-        self.version += 1;
-        self.image = Image::new(new_width, new_height);
-    }
-
-    pub(crate) fn dimensions(&self) -> (u16, u16) {
-        self.image.dimensions()
-    }
-
-    pub(crate) fn get_pixel_iterations(&self, x: u16, y: u16) -> u16 {
-        self.image.get_pixel_iterations(x, y)
-    }
-
-    pub(crate) fn compute(&mut self) {
-        println!("compute");
-        let (width, height) = self.image.dimensions();
-        let height_ranges: Vec<u16> = (0..height).collect();
-        let pixels:Vec<Vec<Pixel>> = height_ranges
-            .par_iter()
-            .map(|y| {
-                let mut pixel_vec = Vec::new();
-                for x in 0..width {
-                    let iterations = self.is_in_mandelbrot_set(x, *y, self.max_iterations);
-                    pixel_vec.push(Pixel::new(x, *y, iterations));
-                }
-                pixel_vec
-            }).collect();
-        for pixel_vec in pixels {
-            let pixel_vec: Vec<Pixel> = pixel_vec;
-            for pixel in pixel_vec {
-                self.image.set_pixel_iterations(&pixel);
+pub(crate) fn compute_mandelbrot(params: &Params, image: &mut Image) {
+    println!("compute");
+    let (width, height) = image.dimensions();
+    let height_ranges: Vec<u16> = (0..height).collect();
+    let pixels: Vec<Vec<Pixel>> = height_ranges
+        .par_iter()
+        .map(|y| {
+            let mut pixel_vec = Vec::new();
+            for x in 0..width {
+                let iterations = is_in_mandelbrot_set(image.dimensions(), x, *y, params.min_x, params.min_y, params.width, params.height, params.max_iterations).len() as u16;
+                pixel_vec.push(Pixel::new(x, *y, iterations));
             }
+            pixel_vec
+        }).collect();
+    for pixel_vec in pixels {
+        let pixel_vec: Vec<Pixel> = pixel_vec;
+        for pixel in pixel_vec {
+            image.set_pixel_iterations(&pixel);
         }
     }
+}
 
-    fn is_in_mandelbrot_set(&self, x: u16, y: u16, max_iterations: u16) -> u16 {
-        let scaled_x = scale_x(x, self.image.width() as f64, self.min_x, self.width);
-        let scaled_y = scale_y(y, self.image.height() as f64, self.min_y, self.height);
-        let c = Complex::new(scaled_x, scaled_y);
-        let mut z = Complex::new(0.0, 0.0);
-        for i in 0..max_iterations {
-            z = z * z + c;
-            if z.norm_sqr() > 4.0 {
-                return i;
-            }
+pub(crate) fn is_in_mandelbrot_set(image_dimension: (u16, u16), x: u16, y: u16, min_x: f64, min_y: f64, width: f64, height: f64, max_iterations: u16) -> Vec<Complex> {
+    let scaled_x = scale_x(x, image_dimension.0 as f64, min_x, width);
+    let scaled_y = scale_y(y, image_dimension.1 as f64, min_y, height);
+    let c = Complex::new(scaled_x, scaled_y);
+    let mut points: Vec<Complex> = Vec::new();
+    let mut z = Complex::new(0.0, 0.0);
+    points.push(z);
+    for _ in 0..max_iterations {
+        z = z * z + c;
+        points.push(z);
+        if z.norm_sqr() > 4.0 {
+            return points;
         }
-        max_iterations
     }
-
-    pub(crate) fn zoom_in(&mut self) {
-        self.min_x += self.width / 4.0;
-        self.min_y += self.height / 4.0;
-        self.width /= 2.0;
-        self.height /= 2.0;
-    }
-
-    pub(crate) fn zoom_out(&mut self) {
-        self.min_x -= self.width;
-        self.min_y -= self.height;
-        self.width *= 2.0;
-        self.height *= 2.0;
-    }
-
-    pub(crate) fn max_iterations(&self) -> u16 {
-        self.max_iterations
-    }
-
-    pub(crate) fn decrease_iterations(&mut self) {
-        self.max_iterations /= 2;
-        if self.max_iterations < 10 {
-            self.max_iterations = 10;
-        }
-        println!("max_iterations: {}", self.max_iterations)
-    }
-
-    pub(crate) fn increase_iterations(&mut self) {
-        self.max_iterations *= 2;
-        println!("max_iterations: {}", self.max_iterations)
-    }
+    points
 }

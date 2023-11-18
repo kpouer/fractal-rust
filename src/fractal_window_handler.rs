@@ -5,26 +5,35 @@ use speedy2d::image::ImageDataType::RGB;
 use speedy2d::image::ImageHandle;
 use speedy2d::image::ImageSmoothingMode::NearestNeighbor;
 use speedy2d::window::{KeyScancode, MouseButton, VirtualKeyCode, WindowHandler, WindowHelper};
+
 use crate::color_model::{ColorArgs, get_color_model};
 use crate::constants::DEFAULT_COLOR_MODEL;
-use crate::fractal::mandelbrot::Mandelbrot;
-use crate::INITIAL_WIDTH;
+use crate::fractal;
+use crate::fractal::fractal_type::FractalType;
+use crate::fractal::image::Image;
+use crate::fractal::params::Params;
 
-pub(crate) struct MandelbrotWindowHandler
+pub(crate) struct FractalWindowHandler
 {
-    mandelbrot: Mandelbrot,
+    params: Params,
+    canvas: Image,
+    compute_function: Box<dyn Fn(&Params, &mut Image)>,
     color_model: Box<dyn Fn(&ColorArgs) -> Color>,
     mouse_position: Vec2,
     image: Option<ImageHandle>,
     must_redraw: bool,
 }
 
-impl MandelbrotWindowHandler
+impl FractalWindowHandler
 {
-    pub(crate) fn new() -> Self {
+    pub(crate) fn new(fractal_type: &FractalType, width: u32, height: u32) -> Self {
+        let params = fractal::get_params(&fractal_type);
+        let compute_function = fractal::get_compute_function(&fractal_type);
         let color_model = get_color_model(DEFAULT_COLOR_MODEL);
         Self {
-            mandelbrot: Mandelbrot::new(INITIAL_WIDTH, INITIAL_WIDTH),
+            params,
+            canvas: Image::new(width, height),
+            compute_function,
             color_model,
             mouse_position: Vec2::ZERO,
             image: None,
@@ -33,10 +42,10 @@ impl MandelbrotWindowHandler
     }
 }
 
-impl WindowHandler for MandelbrotWindowHandler
+impl WindowHandler for FractalWindowHandler
 {
     fn on_resize(&mut self, helper: &mut WindowHelper<()>, size_pixels: UVec2) {
-        self.mandelbrot.resize(size_pixels.x, size_pixels.y);
+        self.canvas = Image::new(size_pixels.x, size_pixels.y);
         self.must_redraw = true;
         helper.request_redraw();
     }
@@ -45,7 +54,8 @@ impl WindowHandler for MandelbrotWindowHandler
         if self.must_redraw {
             self.must_redraw = false;
             let start = std::time::Instant::now();
-            self.mandelbrot.compute();
+            let compute_function = &self.compute_function;
+            compute_function(&self.params, &mut self.canvas);
             println!("compute in : {:?}", start.elapsed());
             let image = self.build_image(graphics);
             self.image = Some(image);
@@ -66,7 +76,7 @@ impl WindowHandler for MandelbrotWindowHandler
 
     fn on_mouse_button_down(&mut self, helper: &mut WindowHelper<()>, button: MouseButton) {
         if button == MouseButton::Left {
-            self.mandelbrot.set_center(self.mouse_position);
+            self.params.set_center(self.mouse_position, self.canvas.width as f64, self.canvas.height as f64);
             self.must_redraw = true;
             helper.request_redraw();
         }
@@ -76,41 +86,44 @@ impl WindowHandler for MandelbrotWindowHandler
         match virtual_key_code {
             None => {}
             Some(VirtualKeyCode::W) => {
-                self.mandelbrot.decrease_iterations();
+                self.params.decrease_iterations();
                 self.must_redraw = true;
                 helper.request_redraw();
             }
             Some(VirtualKeyCode::X) => {
-                self.mandelbrot.increase_iterations();
+                self.params.increase_iterations();
                 self.must_redraw = true;
                 helper.request_redraw();
             }
             Some(VirtualKeyCode::V) => {
-                self.mandelbrot.zoom_in();
-                self.must_redraw = true;
-                helper.request_redraw();
+                if self.params.support_zoom {
+                    self.params.zoom_in();
+                    self.must_redraw = true;
+                    helper.request_redraw();
+                }
             }
             Some(VirtualKeyCode::C) => {
-                self.mandelbrot.zoom_out();
-                self.must_redraw = true;
-                helper.request_redraw();
+                if self.params.support_zoom {
+                    self.params.zoom_out();
+                    self.must_redraw = true;
+                    helper.request_redraw();
+                }
             }
             _ => {}
         }
     }
 }
 
-impl MandelbrotWindowHandler {
+impl FractalWindowHandler {
     fn draw_pixels(&mut self, graphics: &mut Graphics2D) {
         let start = std::time::Instant::now();
         graphics.clear_screen(Color::WHITE);
-        let mandelbrot = &self.mandelbrot;
-        let (width, height) = mandelbrot.dimensions();
-        let mut color_args = ColorArgs::new(0, self.mandelbrot.max_iterations());
+        let (width, height) = self.canvas.dimensions();
+        let mut color_args = ColorArgs::new(0, self.params.max_iterations);
         let color_function = &self.color_model;
         for y in 0..height {
             for x in 0..width {
-                let iterations = mandelbrot.get_pixel_iterations(x, y);
+                let iterations = self.canvas.get_pixel_iterations(x, y);
                 color_args.iterations = iterations;
                 let color = color_function(&color_args);
                 graphics.draw_line((x as f32, y as f32),
@@ -124,12 +137,12 @@ impl MandelbrotWindowHandler {
     }
 
     fn build_image(&mut self, graphics: &mut Graphics2D) -> ImageHandle {
-        let data = &self.mandelbrot.image.iterations;
+        let data = &self.canvas.iterations;
         let color_function = &self.color_model;
         let mut buffer: Vec<u8> = Vec::new();
         data.iter()
             .map(|iterations| {
-                let color_args = ColorArgs::new(*iterations, self.mandelbrot.max_iterations());
+                let color_args = ColorArgs::new(*iterations, self.params.max_iterations);
                 color_function(&color_args)
             })
             .for_each(|color| {
@@ -140,7 +153,7 @@ impl MandelbrotWindowHandler {
                 buffer.push(g);
                 buffer.push(b);
             });
-        let (width, height) = self.mandelbrot.dimensions();
+        let (width, height) = self.canvas.dimensions();
         let size = UVec2::new(width as u32, height as u32);
         let raw = buffer.as_slice();
         let image = graphics.create_image_from_raw_pixels(

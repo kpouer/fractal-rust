@@ -1,9 +1,16 @@
+use std::fmt::Display;
 use hsv::hsv_to_rgb;
 use speedy2d::color::Color;
 
 pub(crate) struct ColorArgs {
     pub(crate) iterations: u16,
     max_iterations: u16,
+}
+
+impl Display for ColorArgs {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "(iterations: {}, max_iterations: {})", self.iterations, self.max_iterations)
+    }
 }
 
 impl ColorArgs {
@@ -39,6 +46,7 @@ fn hsv(color_args: &ColorArgs) -> Color {
     Color::from_int_rgb(color.0, color.1, color.2)
 }
 
+#[warn(dead_code)]
 pub(crate) enum ColorModelType {
     BlackWhite,
     HSVColor,

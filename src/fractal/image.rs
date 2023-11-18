@@ -1,8 +1,8 @@
 use crate::fractal::pixel::Pixel;
 
 pub(crate) struct Image {
-    width: u16,
-    height: u16,
+    pub(crate) width: u16,
+    pub(crate) height: u16,
     pub(crate) iterations: Vec<u16>,
 
 }
@@ -14,14 +14,6 @@ impl Image {
             height: height as u16,
             iterations: vec![0; (width * height) as usize],
         }
-    }
-
-    pub(crate) fn width(&self) -> u16 {
-        self.width
-    }
-
-    pub(crate) fn height(&self) -> u16 {
-        self.height
     }
 
     pub(crate) fn set_pixel_iterations(&mut self, pixel: &Pixel) {
@@ -73,8 +65,8 @@ mod tests {
         const WIDTH: u32 = 1024;
         const HEIGHT: u32 = 768;
         let image = Image::new(WIDTH, HEIGHT);
-        assert_eq!(image.width(), 1024);
-        assert_eq!(image.height(), 768);
+        assert_eq!(image.width, 1024);
+        assert_eq!(image.height, 768);
         assert_eq!(image.get_index(0, 0), 0);
         assert_eq!(image.get_index(0, 1), WIDTH as usize);
   //      assert_eq!(image.get_index((WIDTH - 1) as u16, (HEIGHT - 1) as u16), (WIDTH * HEIGHT) as usize);
