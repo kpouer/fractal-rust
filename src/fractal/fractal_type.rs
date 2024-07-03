@@ -1,4 +1,4 @@
-#[warn(dead_code)]
+#[derive(Copy, Clone)]
 pub(crate) enum FractalType {
     Mandelbrot,
     Buddahbrot,

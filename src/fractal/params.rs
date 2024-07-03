@@ -1,6 +1,5 @@
-use speedy2d::dimen::Vec2;
-
 use crate::fractal::{scale_x, scale_y};
+use crate::point::Point;
 
 pub(crate) struct Params {
     pub(crate) max_iterations: u16,
@@ -25,7 +24,7 @@ impl Params {
         println!("max_iterations: {}", self.max_iterations)
     }
 
-    pub(crate) fn set_center(&mut self, center_pixel: Vec2, image_width: f64, image_height: f64) {
+    pub(crate) fn set_center(&mut self, center_pixel: &Point, image_width: f64, image_height: f64) {
         let scaled_x = scale_x(center_pixel.x, image_width, self.min_x, self.width);
         let scaled_y = scale_y(center_pixel.y, image_height, self.min_y, self.height);
         self.width /= 2.0;

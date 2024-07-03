@@ -1,6 +1,7 @@
 use std::fmt::Display;
 use hsv::hsv_to_rgb;
-use speedy2d::color::Color;
+use crate::color;
+use crate::color::Color;
 
 pub(crate) struct ColorArgs {
     pub(crate) iterations: u16,
@@ -32,18 +33,19 @@ impl ColorArgs {
 
 fn black_and_white(color_args: &ColorArgs) -> Color {
     let gray_scale: f64 = color_args.get_hue();
-    Color::from_gray(gray_scale as f32)
+
+    Color::from(&gray_scale)
 }
 
 fn hsv(color_args: &ColorArgs) -> Color {
     if !color_args.escaped() {
-        return Color::BLACK;
+        return color::BLACK;
     }
     let hue: f64 = color_args.get_hue() * 360.0;
     let saturation: f64 = 1.0;
     let lightness: f64 = 0.5;
     let color = hsv_to_rgb(hue, saturation, lightness);
-    Color::from_int_rgb(color.0, color.1, color.2)
+    Color::from(color)
 }
 
 #[warn(dead_code)]

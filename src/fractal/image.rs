@@ -4,15 +4,15 @@ pub(crate) struct Image {
     pub(crate) width: u16,
     pub(crate) height: u16,
     pub(crate) iterations: Vec<u16>,
-
 }
 
 impl Image {
-    pub(crate) fn new(width: u32, height: u32) -> Image {
+    pub(crate) fn new(width: u16, height: u16) -> Image {
+        let length = width as usize * height as usize;
         Image {
-            width: width as u16,
-            height: height as u16,
-            iterations: vec![0; (width * height) as usize],
+            width,
+            height,
+            iterations: vec![0; length],
         }
     }
 
@@ -62,8 +62,8 @@ mod tests {
 
     #[test]
     fn test_create_image() {
-        const WIDTH: u32 = 1024;
-        const HEIGHT: u32 = 768;
+        const WIDTH: u16 = 1024;
+        const HEIGHT: u16 = 768;
         let image = Image::new(WIDTH, HEIGHT);
         assert_eq!(image.width, 1024);
         assert_eq!(image.height, 768);
