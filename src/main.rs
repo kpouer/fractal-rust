@@ -3,6 +3,7 @@ use std::thread;
 use std::thread::sleep;
 use egui::ImageData;
 use crate::constants::DEFAULT_FRACTAL;
+use crate::fractal::get_compute_function;
 use crate::fractal::params::Params;
 use crate::fractal_renderer::FractalRenderer;
 use crate::fractal_window_handler::FractalWindowHandler;
@@ -40,6 +41,7 @@ fn run_loop(image_data_sender: Sender<ImageData>) {
     let params = Params::from(DEFAULT_FRACTAL);
     let mut fractal_renderer = FractalRenderer::new(INITIAL_WIDTH, INITIAL_HEIGHT, params);
     loop {
+        fractal_renderer.compute();
         let image = fractal_renderer.build_image();
         image_data_sender.send(image).unwrap();
         sleep(std::time::Duration::from_millis(100));

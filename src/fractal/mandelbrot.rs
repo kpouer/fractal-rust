@@ -3,6 +3,7 @@ use rayon::prelude::*;
 use crate::constants::MAX_ITERATIONS;
 use crate::fractal::{scale_x, scale_y};
 use crate::fractal::complex::Complex;
+use crate::fractal::fractal_type::FractalType;
 use crate::fractal::image::Image;
 use crate::fractal::params::Params;
 use crate::fractal::pixel::Pixel;
@@ -14,6 +15,7 @@ const MAX_Y: f64 = 1.0;
 
 pub(crate) fn get_mandelbrot_params() -> Params {
     Params {
+        fractal_type: FractalType::Mandelbrot,
         max_iterations: MAX_ITERATIONS,
         support_zoom: true,
         min_x: MIN_X,

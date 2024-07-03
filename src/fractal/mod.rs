@@ -13,19 +13,6 @@ pub(crate) mod mandelbrot;
 pub(crate) mod fractal_type;
 pub(crate) mod params;
 
-impl From<FractalType> for Params {
-    fn from(fractal_type: FractalType) -> Self {
-        match fractal_type {
-            FractalType::Mandelbrot => get_mandelbrot_params(),
-            FractalType::Buddahbrot => {
-                let mut params = get_mandelbrot_params();
-                params.support_zoom = false;
-                params
-            }
-        }
-    }
-}
-
 pub(crate) fn get_compute_function(fractal_type: &FractalType) -> Box<dyn Fn(&Params, &mut Image)> {
     match fractal_type {
         FractalType::Mandelbrot => { Box::new(compute_mandelbrot) },

@@ -1,13 +1,30 @@
 use crate::fractal::{scale_x, scale_y};
+use crate::fractal::fractal_type::FractalType;
+use crate::fractal::mandelbrot::get_mandelbrot_params;
 use crate::point::Point;
 
 pub(crate) struct Params {
+    pub(crate) fractal_type: FractalType,
     pub(crate) max_iterations: u16,
     pub(crate) support_zoom: bool,
     pub(crate) min_x: f64,
     pub(crate) width: f64,
     pub(crate) min_y: f64,
     pub(crate) height: f64,
+}
+
+
+impl From<FractalType> for Params {
+    fn from(fractal_type: FractalType) -> Self {
+        match fractal_type {
+            FractalType::Mandelbrot => get_mandelbrot_params(),
+            FractalType::Buddahbrot => {
+                let mut params = get_mandelbrot_params();
+                params.support_zoom = false;
+                params
+            }
+        }
+    }
 }
 
 impl Params {
