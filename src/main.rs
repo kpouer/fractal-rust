@@ -3,7 +3,6 @@ use std::thread;
 use std::thread::sleep;
 use egui::ImageData;
 use crate::constants::DEFAULT_FRACTAL;
-use crate::fractal::get_compute_function;
 use crate::fractal::params::Params;
 use crate::fractal_renderer::FractalRenderer;
 use crate::fractal_window_handler::FractalWindowHandler;

@@ -69,18 +69,18 @@ mod tests {
     #[test]
     fn test_black() {
         let color_arg = ColorArgs::new(0, 150);
-        assert_eq!(black_and_white(&color_arg), Color::BLACK);
+        assert_eq!(black_and_white(&color_arg), color::BLACK);
     }
 
     #[test]
     fn test_white() {
         let color_arg = ColorArgs::new(150, 150);
-        assert_eq!(black_and_white(&color_arg), Color::WHITE);
+        assert_eq!(black_and_white(&color_arg), color::WHITE);
     }
 
     #[test]
     fn test_gray() {
         let color_arg = ColorArgs::new(50, 100);
-        assert_eq!(black_and_white(&color_arg), Color::from_gray(0.5));
+        assert_eq!(black_and_white(&color_arg), Color::from(0.5));
     }
 }

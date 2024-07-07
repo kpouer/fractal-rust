@@ -4,7 +4,6 @@ use crate::color::Color;
 use crate::color_model;
 use crate::color_model::ColorArgs;
 use crate::constants::DEFAULT_COLOR_MODEL;
-use crate::fractal::get_compute_function;
 use crate::fractal::image::Image;
 use crate::fractal::params::Params;
 
@@ -30,8 +29,7 @@ impl FractalRenderer {
     }
 
     pub(crate) fn compute(&mut self) {
-        let compute_function = get_compute_function(&self.params.fractal_type);
-        compute_function(&self.params, &mut self.canvas);
+        self.params.fractal_type.compute(&self.params, &mut self.canvas);
     }
 
      pub(crate) fn build_image(&mut self) -> ImageData {

@@ -1,10 +1,3 @@
-use params::Params;
-use crate::fractal::buddahbrot::compute_buddahbrot;
-use crate::fractal::fractal_type::FractalType;
-
-use crate::fractal::image::Image;
-use crate::fractal::mandelbrot::{compute_mandelbrot, get_mandelbrot_params};
-
 mod complex;
 pub(crate) mod image;
 mod pixel;
@@ -12,13 +5,6 @@ pub(crate) mod buddahbrot;
 pub(crate) mod mandelbrot;
 pub(crate) mod fractal_type;
 pub(crate) mod params;
-
-pub(crate) fn get_compute_function(fractal_type: &FractalType) -> Box<dyn Fn(&Params, &mut Image)> {
-    match fractal_type {
-        FractalType::Mandelbrot => { Box::new(compute_mandelbrot) },
-        FractalType::Buddahbrot => { Box::new(compute_buddahbrot) }
-    }
-}
 
 pub(crate) fn scale_x<T: Into<f64>>(x: T, image_width: f64, min_x_re: f64, width_re: f64) -> f64 {
     (x.into() / image_width) * width_re + min_x_re
