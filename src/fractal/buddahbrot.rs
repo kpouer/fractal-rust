@@ -8,7 +8,6 @@ use crate::fractal::params::Params;
 use crate::fractal::pixel::Pixel;
 
 pub(crate) fn compute_buddahbrot(params: &Params, image: &mut Image) {
-    println!("compute");
     let pixels = compute_points(image.dimensions(), params.min_x, params.min_y, params.width, params.height, params.max_iterations);
     for complex in pixels {
         let x: u16 = scale_x_to_image(complex.re, image.width as f64, params.min_x, params.width);

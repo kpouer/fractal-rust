@@ -1,21 +1,24 @@
-use std::sync::mpsc::Receiver;
+use std::sync::mpsc::{Receiver, Sender};
 use std::time::Duration;
 
 use eframe::{App, Frame};
 use eframe::epaint::{ImageData, TextureHandle};
 use egui::Context;
+use egui::style::Interaction;
 
 pub(crate) struct FractalWindowHandler {
     must_redraw: bool,
     image_data_receiver: Receiver<ImageData>,
+    interaction_sender: Sender<Interaction>,
     texture: Option<TextureHandle>,
 }
 
-impl From<Receiver<ImageData>> for FractalWindowHandler {
-    fn from(image_data_receiver: Receiver<ImageData>) -> Self {
+impl FractalWindowHandler {
+    pub(crate) fn new(image_data_receiver: Receiver<ImageData>, interaction_sender: Sender<Interaction>) -> Self {
         Self {
             must_redraw: true,
             image_data_receiver,
+            interaction_sender,
             texture: None,
         }
     }

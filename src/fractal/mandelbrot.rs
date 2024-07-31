@@ -26,7 +26,7 @@ pub(crate) fn get_mandelbrot_params() -> Params {
 }
 
 pub(crate) fn compute_mandelbrot(params: &Params, image: &mut Image) {
-    println!("compute");
+    println!("compute mandelbrot");
     let (width, height) = image.dimensions();
     let height_ranges: Vec<u16> = (0..height).collect();
     let pixels: Vec<Vec<Pixel>> = height_ranges
