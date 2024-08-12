@@ -2,7 +2,7 @@ use std::sync::mpsc::{channel, Receiver, Sender};
 use std::thread;
 use std::thread::sleep;
 use std::time::Duration;
-use egui::ImageData;
+use eframe::epaint::ImageData;
 use egui::style::Interaction;
 use crate::constants::DEFAULT_FRACTAL;
 use crate::fractal::params::Params;
@@ -36,7 +36,7 @@ fn main()
     eframe::run_native(
         "Fractal",
         native_options,
-        Box::new(|cc| Box::new(FractalWindowHandler::new(image_data_receiver, interaction_sender))),
+        Box::new(|_cc| Ok(Box::new(FractalWindowHandler::new(image_data_receiver, interaction_sender)))),
     ).unwrap();
 }
 
