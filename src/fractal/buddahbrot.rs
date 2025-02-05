@@ -1,4 +1,4 @@
-use rand::{thread_rng, Rng};
+use rand::{rng, Rng};
 
 use crate::fractal::complex::Complex;
 use crate::fractal::image::Image;
@@ -31,12 +31,12 @@ fn compute_points(
     height: f64,
     max_iterations: u16,
 ) -> Vec<Complex> {
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut all_points: Vec<Complex> = Vec::new();
     for _ in 0..100000 {
         let (x, y) = (
-            rng.gen_range(0..image_dimension.0),
-            rng.gen_range(0..image_dimension.1),
+            rng.random_range(0..image_dimension.0),
+            rng.random_range(0..image_dimension.1),
         );
         let points = is_in_mandelbrot_set(
             image_dimension,
