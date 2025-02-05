@@ -1,7 +1,7 @@
-use std::fmt::Display;
-use hsv::hsv_to_rgb;
 use crate::color;
 use crate::color::Color;
+use hsv::hsv_to_rgb;
+use std::fmt::Display;
 
 pub(crate) struct ColorArgs {
     pub(crate) iterations: u16,
@@ -10,7 +10,11 @@ pub(crate) struct ColorArgs {
 
 impl Display for ColorArgs {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "(iterations: {}, max_iterations: {})", self.iterations, self.max_iterations)
+        write!(
+            f,
+            "(iterations: {}, max_iterations: {})",
+            self.iterations, self.max_iterations
+        )
     }
 }
 
@@ -54,10 +58,12 @@ pub(crate) enum ColorModelType {
     HSVColor,
 }
 
-pub(crate) fn get_color_model(color_model_type: ColorModelType) -> Box<dyn Fn(&ColorArgs) -> Color> {
+pub(crate) fn get_color_model(
+    color_model_type: ColorModelType,
+) -> Box<dyn Fn(&ColorArgs) -> Color> {
     match color_model_type {
-        ColorModelType::BlackWhite => { Box::new(black_and_white) }
-        ColorModelType::HSVColor => { Box::new(hsv) }
+        ColorModelType::BlackWhite => Box::new(black_and_white),
+        ColorModelType::HSVColor => Box::new(hsv),
     }
 }
 

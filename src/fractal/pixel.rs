@@ -6,11 +6,7 @@ pub(crate) struct Pixel {
 
 impl Pixel {
     pub(crate) fn new(x: u16, y: u16, iterations: u16) -> Self {
-        Self {
-            x,
-            y,
-            iterations,
-        }
+        Self { x, y, iterations }
     }
 
     pub fn x(&self) -> u16 {

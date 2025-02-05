@@ -1,10 +1,10 @@
-mod complex;
-pub(crate) mod image;
-mod pixel;
 pub(crate) mod buddahbrot;
-pub(crate) mod mandelbrot;
+mod complex;
 pub(crate) mod fractal_type;
+pub(crate) mod image;
+pub(crate) mod mandelbrot;
 pub(crate) mod params;
+mod pixel;
 
 pub(crate) fn scale_x<T: Into<f64>>(x: T, image_width: f64, min_x_re: f64, width_re: f64) -> f64 {
     (x.into() / image_width) * width_re + min_x_re

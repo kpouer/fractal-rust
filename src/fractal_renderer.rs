@@ -29,11 +29,13 @@ impl FractalRenderer {
     }
 
     pub(crate) fn compute_and_build_image(&mut self) -> ImageData {
-        self.params.fractal_type.compute(&self.params, &mut self.canvas);
+        self.params
+            .fractal_type
+            .compute(&self.params, &mut self.canvas);
         self.build_image()
     }
 
-     fn build_image(&mut self) -> ImageData {
+    fn build_image(&mut self) -> ImageData {
         let data = &self.canvas.iterations;
         let color_function = &self.color_model;
         let mut buffer: Vec<u8> = Vec::new();
@@ -47,8 +49,11 @@ impl FractalRenderer {
                 buffer.push(color.g());
                 buffer.push(color.b());
             });
-         let color_image = ColorImage::from_rgb([self.width as usize, self.height as usize], buffer.as_slice());
-         let image_data = ImageData::from(color_image);
-         image_data
+        let color_image = ColorImage::from_rgb(
+            [self.width as usize, self.height as usize],
+            buffer.as_slice(),
+        );
+        let image_data = ImageData::from(color_image);
+        image_data
     }
 }

@@ -1,10 +1,10 @@
 use std::sync::mpsc::{Receiver, Sender};
 use std::time::Duration;
 
-use eframe::{App, Frame};
 use eframe::epaint::{ImageData, TextureHandle};
-use egui::Context;
+use eframe::{App, Frame};
 use egui::style::Interaction;
+use egui::Context;
 
 pub(crate) struct FractalWindowHandler {
     must_redraw: bool,
@@ -14,7 +14,10 @@ pub(crate) struct FractalWindowHandler {
 }
 
 impl FractalWindowHandler {
-    pub(crate) fn new(image_data_receiver: Receiver<ImageData>, interaction_sender: Sender<Interaction>) -> Self {
+    pub(crate) fn new(
+        image_data_receiver: Receiver<ImageData>,
+        interaction_sender: Sender<Interaction>,
+    ) -> Self {
         Self {
             must_redraw: true,
             image_data_receiver,
@@ -28,9 +31,7 @@ impl App for FractalWindowHandler {
     fn update(&mut self, ctx: &Context, frame: &mut Frame) {
         if let Ok(image_data) = self.image_data_receiver.try_recv() {
             let texture_options = egui::TextureOptions::default();
-            let texture = ctx.load_texture("Screen".to_string(),
-                                           image_data,
-                                           texture_options);
+            let texture = ctx.load_texture("Screen".to_string(), image_data, texture_options);
             self.texture = Some(texture);
         }
         egui::CentralPanel::default().show(ctx, |ui| {

@@ -1,6 +1,6 @@
-use crate::fractal::{scale_x, scale_y};
 use crate::fractal::fractal_type::FractalType;
 use crate::fractal::mandelbrot::get_mandelbrot_params;
+use crate::fractal::{scale_x, scale_y};
 use crate::point::Point;
 
 pub(crate) struct Params {
@@ -12,7 +12,6 @@ pub(crate) struct Params {
     pub(crate) min_y: f64,
     pub(crate) height: f64,
 }
-
 
 impl From<FractalType> for Params {
     fn from(fractal_type: FractalType) -> Self {

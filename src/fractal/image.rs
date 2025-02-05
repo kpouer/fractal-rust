@@ -69,7 +69,6 @@ mod tests {
         assert_eq!(image.height, 768);
         assert_eq!(image.get_index(0, 0), 0);
         assert_eq!(image.get_index(0, 1), WIDTH as usize);
-  //      assert_eq!(image.get_index((WIDTH - 1) as u16, (HEIGHT - 1) as u16), (WIDTH * HEIGHT) as usize);
-
+        //      assert_eq!(image.get_index((WIDTH - 1) as u16, (HEIGHT - 1) as u16), (WIDTH * HEIGHT) as usize);
     }
 }
